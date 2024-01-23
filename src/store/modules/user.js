@@ -33,7 +33,7 @@ const actions = {
   // 获取用户信息
   async getUserInfo({ commit }) {
     const res = await getProfileApi();
-    console.log("res=>", res);
+    // console.log("res=>", res);
     commit("setUser", res);
   },
   // 退出登录

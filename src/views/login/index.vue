@@ -29,8 +29,8 @@ export default {
   data() {
     return {
       ruleForm: {
-        mobile: "13800000002",
-        password: "hm#qd@23!",
+        mobile: "16692175274",
+        password: "123456",
         isAred: false
       },
       rules: {
