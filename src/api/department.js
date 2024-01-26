@@ -24,3 +24,36 @@ export function addDepartmentApi(data) {
     data,
   });
 }
+
+// 删除部门
+export function deleteDepartmentApi(id) {
+  return service({
+    url: `/company/department/${id}`,
+    method: "DELETE",
+  });
+}
+
+// 获取部门详情
+export function getDepartmentDetailApi(id) {
+  return service({
+    url: `/company/department/${id}`,
+    method: "GET",
+  });
+}
+
+// 修改部门
+export function updateDepartmentApi(id, data) {
+  return service({
+    url: `/company/department/${id}`,
+    method: "PUT",
+    data,
+  });
+}
+
+// 删除部门
+export function removeDepartmentApi(id) {
+  return service({
+    url: `/company/department/${id}`,
+    method: "DELETE",
+  });
+}

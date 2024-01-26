@@ -28,6 +28,7 @@ service.interceptors.request.use(
 // 添加响应拦截器
 service.interceptors.response.use(
   (response) => {
+    if (response.data instanceof Blob) return response.data;
     const { success, message, data } = response.data;
     if (success) {
       return data;

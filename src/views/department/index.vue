@@ -35,6 +35,7 @@
     </div>
     <!-- .sync 会直接监听子组件的 update:show-dialog -->
     <add-dept
+      ref="dept"
       :current-node-id="currentNodeId"
       :show-dialog.sync="showDialog"
       @updateDepartment="getDepartment"
@@ -43,7 +44,7 @@
 </template>
 
 <script>
-import { getDepartmentApi } from "@/api/department";
+import { getDepartmentApi, removeDepartmentApi } from "@/api/department";
 import { transListToTreeDate } from "@/utils/index";
 import addDept from "./components/add-dept.vue";
 
@@ -75,7 +76,25 @@ export default {
           this.currentNodeId = id;
           this.showDialog = true;
           break;
+        case "edit":
+          this.showDialog = true;
+          this.currentNodeId = id;
+          this.$nextTick(() => {
+            this.$refs.dept.getDepartmentDetail();
+          });
+          break;
+        case "remove":
+          this.removeDepartment(id);
+          break;
       }
+    },
+    // 删除部门
+    removeDepartment(id) {
+      this.$confirm("您确认要删除该部门吗？").then(async () => {
+        await removeDepartmentApi(id);
+        this.$message.success("删除部门成功");
+        this.getDepartment();
+      });
     }
   },
   created() {
