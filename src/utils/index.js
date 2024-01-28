@@ -124,7 +124,9 @@ export function transListToTreeDate(data, rootValue) {
   data.forEach((item) => {
     if (item.pid == rootValue) {
       const children = transListToTreeDate(data, item.id);
-      item.children = children;
+      if (children.length > 0) {
+        item.children = children;
+      }
       arr.push(item);
     }
   });

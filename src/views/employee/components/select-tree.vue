@@ -35,8 +35,8 @@ export default {
   methods: {
     async getDepartment() {
       const res = await getDepartmentApi();
-
       this.options = transListToTreeDate(res, 0);
+      console.log(this.options);
     },
     handleChange(event) {
       console.log("event===>", event);
