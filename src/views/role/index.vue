@@ -51,8 +51,8 @@
               </el-col>
             </el-row>
             <template v-else>
-              <el-button type="text" size="mini">分配权限</el-button>
-              <el-button type="text" size="mini" @click="handleEdit(row)">编辑</el-button>
+              <el-button type="text" size="mini" @click="handleGetPermission(slot.row.id)">分配权限</el-button>
+              <el-button type="text" size="mini" @click="handleEdit(slot.row)">编辑</el-button>
               <el-popconfirm title="这是一段内容确定删除吗？" @onConfirm="confirmDel(slot.row.id)">
                 <el-button slot="reference" style="margin-left: 10px" type="text" size="mini">删除</el-button>
               </el-popconfirm>
@@ -106,6 +106,23 @@
           </el-form-item>
         </el-form>
       </el-dialog>
+
+      <!-- 分配权限 -->
+      <el-dialog title="分配权限" :visible.sync="showPermissionDialog">
+        <el-tree
+          ref="permissionTree"
+          :data="permissionList"
+          show-checkbox
+          node-key="id"
+          default-expand-all
+          :default-checked-keys="permissionIds"
+          :props="defaultProps"
+        />
+        <el-row type="flex" justify="center" align="middle">
+          <el-button size="mini" type="primary" @click="submitPermission">确定</el-button>
+          <el-button size="mini" @click="showPermissionDialog = false">取消</el-button>
+        </el-row>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -114,8 +131,12 @@ import {
   getRoleListApi,
   addRoleApi,
   updateRoleInfoApi,
-  removeRoleApi
+  removeRoleApi,
+  getRoleDetailApi,
+  assignPremissionApi
 } from "@/api/role";
+import { getPermissionListApi } from "@/api/permission";
+import { transListToTreeDate } from "@/utils";
 export default {
   name: "Role",
   components: {},
@@ -126,6 +147,14 @@ export default {
       roleList: [],
       total: 0,
       showDialog: false,
+      showPermissionDialog: false,
+      permissionList: [],
+      permissionIds: [],
+      defaultProps: {
+        children: "children",
+        label: "name"
+      },
+      roleId: "",
       roleForm: {
         name: "",
         description: "",
@@ -204,6 +233,26 @@ export default {
     async confirmDel(id) {
       const res = await removeRoleApi(id);
       this.getRoleList();
+    },
+    // 打开弹窗获取权限列表
+    async handleGetPermission(id) {
+      this.roleId = id;
+
+      const res = await getPermissionListApi();
+      this.permissionList = transListToTreeDate(res, 0);
+
+      const { permIds } = await getRoleDetailApi(id);
+      this.permissionIds = permIds;
+      this.showPermissionDialog = true;
+    },
+    // 确认分配
+    async submitPermission() {
+      await assignPremissionApi({
+        id: this.roleId,
+        permIds: this.$refs.permissionTree.getCheckedKeys()
+      });
+      this.$message.success("角色分配成功");
+      this.showPermissionDialog = false;
     }
   },
   created() {

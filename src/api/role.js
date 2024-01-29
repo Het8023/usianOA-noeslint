@@ -34,3 +34,28 @@ export function removeRoleApi(id) {
     method: "DELETE",
   });
 }
+
+// 获取-已启用的角色列表
+export function getEnableRoleListApi() {
+  return service({
+    url: "/sys/role/list/enabled",
+    method: "GET",
+  });
+}
+
+// 获取角色详情
+export function getRoleDetailApi(id) {
+  return service({
+    url: `/sys/role/${id}`,
+    method: "GET",
+  });
+}
+
+// 分配权限
+export function assignPremissionApi(data) {
+  return service({
+    url: "/sys/role/assignPrem",
+    method: "PUT",
+    data,
+  });
+}

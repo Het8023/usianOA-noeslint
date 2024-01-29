@@ -60,7 +60,7 @@
           <el-table-column align="center" width="280px" label="操作">
             <template v-slot="{ row }">
               <el-button size="mini" type="text" @click="handleRouter(row.id)">查看</el-button>
-              <el-button size="mini" type="text">角色</el-button>
+              <el-button size="mini" type="text" @click="handleRole(row.id)">角色</el-button>
               <el-popconfirm title="这是一段内容确定删除吗？" @onConfirm="handleDelete(row.id)">
                 <el-button slot="reference" size="mini" type="text">删除</el-button>
               </el-popconfirm>
@@ -80,15 +80,36 @@
 
         <!-- 导入 -->
         <ImportExcel :show-dialog.sync="showDialog"></ImportExcel>
+
+        <!-- 角色分配弹窗 -->
+        <el-dialog title="分配角色" :visible.sync="roleDialog">
+          <el-checkbox-group v-model="roleIds">
+            <el-checkbox
+              v-for="(item,index) in roleList"
+              :key="index"
+              :label="item.id"
+            >{{item.name}}</el-checkbox>
+          </el-checkbox-group>
+          <el-row type="flex" justify="center" align="middle" style="height:80px">
+            <el-button type="primary" size="mini" @click="handleAssignRole">确定</el-button>
+            <el-button size="mini" @click="roleDialog = false">取消</el-button>
+          </el-row>
+        </el-dialog>
       </div>
     </div>
   </div>
 </template>
 <script>
 import { getDepartmentApi } from "@/api/department";
-import { getEmployeListApi } from "@/api/employee";
 import { transListToTreeDate } from "@/utils";
-import { exportEmployeeApi, deleteEmployeeApi } from "@/api/employee";
+import { getEnableRoleListApi } from "@/api/role";
+import {
+  exportEmployeeApi,
+  deleteEmployeeApi,
+  getEmployeListApi,
+  assignRoleApi,
+  getEmployeeDetailApi
+} from "@/api/employee";
 import ImportExcel from "./components/import-excel";
 import _ from "lodash";
 import FileSaver from "file-saver";
@@ -112,7 +133,11 @@ export default {
       },
       total: 0,
       list: [],
-      showDialog: false
+      showDialog: false,
+      roleDialog: false,
+      roleIds: [],
+      roleList: [],
+      staffId: null
     };
   },
   created() {
@@ -172,6 +197,27 @@ export default {
     // 编辑
     handleRouter(id) {
       this.$router.push(`/employee/detail/${id}`);
+    },
+    // 打开角色分配弹窗
+    async handleRole(id) {
+      this.staffId = id;
+      const res = await getEnableRoleListApi();
+
+      // 员工角色回显
+      const { roleIds } = await getEmployeeDetailApi(id);
+
+      this.roleList = res;
+      this.roleIds = roleIds;
+      this.roleDialog = true;
+    },
+    // 修改角色分配
+    async handleAssignRole() {
+      const res = await assignRoleApi({
+        id: this.staffId,
+        roleIds: this.roleIds
+      });
+      this.$message.success("分配用户角色成功");
+      this.roleDialog = false;
     }
   }
 };

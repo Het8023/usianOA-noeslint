@@ -67,3 +67,21 @@ export function updateEmployeeDetailApi(id, data) {
     data,
   });
 }
+
+// 新增员工
+export function addEmployeeApi(data) {
+  return service({
+    url: "/sys/user",
+    method: "POST",
+    data,
+  });
+}
+
+// 分配员工角色
+export function assignRoleApi(data) {
+  return service({
+    url: "/sys/user/assignRoles",
+    method: "PUT",
+    data,
+  });
+}
